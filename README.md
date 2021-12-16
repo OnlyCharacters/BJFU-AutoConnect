@@ -6,3 +6,4 @@
 ### connect.py 用于有线
 ### connect_wifi.py 用于无线
 ### disconnect.py 用于断开连接
+### connect_wifi2.py 用于跟学研WiFi登陆界面一样的无线认证
