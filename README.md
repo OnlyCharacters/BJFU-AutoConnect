@@ -4,9 +4,14 @@
 
 ## xyw.txt 里第一行填写学号，第二行填写校园网密码
 connect.py 用于有线
+
 connect_wifi.py 用于连接宿舍区域的bjfu-wifi
+
 disconnect.py 用于断开连接
+
 connect_wifi2.py 用于连接学研、食堂（登录界面长这个样的）区域的bjfu-wifi
 
+
 话说为什么学校有两个WiFi认证？
+
 学研、西配、食堂使用一套WiFi认证，宿舍使用另一套WiFi认证，为什么？
