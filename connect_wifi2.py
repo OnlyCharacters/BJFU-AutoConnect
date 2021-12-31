@@ -16,7 +16,7 @@ password = ''
 with open('xyw.txt','r') as f:
     lines=f.readlines()
     username = lines[0].rstrip()
-    password = lines[1]
+    password = lines[1].rstrip()
 dataToPost1 = {
     "username": username,
     "password": password,
