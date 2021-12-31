@@ -29,7 +29,7 @@ password = ''
 with open('xyw.txt','r') as f:
     lines=f.readlines()
     username = lines[0].rstrip()
-    password = lines[1]
+    password = lines[1].rstrip()
 
 password1 = md5(password)
 password2 = md5(password1 + no)
