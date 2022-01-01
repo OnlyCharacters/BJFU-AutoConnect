@@ -18,3 +18,8 @@ connect_wifi2.py 用于连接学研、食堂（登录界面长这个样的）区
 
 - 2021-12-31
   学校似乎准备了新的登陆界面，但目前此脚本依然可用
+
+- 2022-01-01
+  信息中心更新完之后，有线（connect.py）g了，connect_wifi.py和connect_wifi2.py暂时可用，disconnect.py也g了
+
+  新的登录逻辑真复杂
