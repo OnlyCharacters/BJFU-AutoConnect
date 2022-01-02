@@ -2,7 +2,7 @@
 
 - 使用方法：
 
-  1. 前往 release 页面下载 BJFU-AutoConnect.zip
+  1. 前往 [release](https://github.com/OnlyCharacters/BJFU-AutoConnect/releases) 页面下载 BJFU-AutoConnect.zip
   2. 下载完成后，解压
   3. 打开 xyw.txt，在第一行填上学号，第二行填上登录的密码，保存退出
   4. 双击 BJFU-AutoConnect.exe 运行即可
