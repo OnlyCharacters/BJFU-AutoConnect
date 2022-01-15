@@ -1,46 +1,126 @@
 import requests
 import base64
-# import socket
+from requests.sessions import RequestsCookieJar
 
+"""
+检查是否存在 cookies.txt 文件
+如果存在返回，并且第一行有内容返回 1，无内容返回 0
+如果不存在返回 0，并创建 cookies.txt
+"""
+def checkCookie():
+    hasCookies = 0
+    try:
+        f = open('cookies.txt', 'r')
+        lines = f.readlines()
+        if lines.count == 0:
+            hasCookies = 0
+        else:
+            hasCookies = 1
+        f.close()
+    except FileNotFoundError:
+        print('No cookies.txt, Create one')
+        f = open('cookies.txt', 'x')
+        hasCookies = 0
+        f.close()
+    return hasCookies
+
+"""
+截取字符串片段
+"""
 def cutString(str, s_start, s_end):
+    # str       str
+    # s_start   str
+    # s_end     str
+    # return    str
     pos_start = str.find(s_start)
     str_temp = str[pos_start + len(s_start):-1]
     pos_end = str_temp.find(s_end)
     return str_temp[:pos_end]
 
-username = ''
-password = ''
-with open('xyw.txt','r') as f:
-    lines=f.readlines()
-    username = lines[0].rstrip()
-    password = lines[1].rstrip()
+"""
+保存 cookies 的值到 cookies.txt
+"""
+def saveCookies(cookies):
+    # cookies   str
+    f = open('cookies.txt', 'w')
+    f.write(cookies)
+    f.close()
 
-# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# result = sock.connect_ex(('192.168.55.2', 8800))
-# if result == 0:
-#     # dor_wifi
-#     r = requests.get('http://202.204.122.1/index.jsp')
-#     wifi_url = r.url
-#     p1 = cutString(wifi_url, 'p1=', '&')
-#     p2 = cutString(wifi_url, 'p2=', '&')
-#     p3 = cutString(wifi_url, 'p3=', '&')
-#     dataToPost1 = {
-#         "p1": 3,
-#         "p2": p2,
-#         "p3": p3,
-#         "p4": "0",
-#         "p5": username,
-#         "p6": password,
-#         "p7": "0",
-#         "PtUser": username,
-#         "PtPwd": password,
-#         "PtButton": "logon",
-#     }
-#     r = requests.post('http://192.168.55.2:8800/ext_captive_portal.html', data=dataToPost1)
+"""
+从 cookies.txt 中读取 cookies 的值
+并返回一个 RequestsCookieJar 对象
+"""
+def getCookies():
+    # return    RequestsCookiesJar
+    cookies = RequestsCookieJar()
+    f = open('cookies.txt', 'r')
+    lines = f.readlines()
+    value = lines[0].rstrip()
+    cookies.set(name='JSESSIONID', value=value, path='/Self', domain='202.204.122.8')
+    return cookies
 
+"""
+把 cookies 的值变成 RequestsCookiesJar 对象
+"""
+def makeCookies(str):
+    # str       str
+    # return    RequestsCookiesJar
+    cookies = RequestsCookieJar()
+    pos_start = str.find('jsessionid=')
+    value = str[pos_start + len('jsessionid=') : -1]
+    cookies.set(name='JSESSIONID', value=value, path='/Self', domain='202.204.122.8')
+    saveCookies(value)
+    return cookies
+
+"""
+从 xyw.txt 中读取用户的账号密码，以元组形式返回
+"""
+def getUserTxt():
+    # return    tuple(username, password)
+    username = ''
+    password = ''
+    with open('xyw.txt','r') as f:
+        lines=f.readlines()
+        username = lines[0].rstrip()
+        password = lines[1].rstrip()
+    return (username, password)
+
+"""
+打印用户的信息
+"""
+def analysis(dashBoardText):
+    # dashBoardText     str
+    userFlow = cutString(dashBoardText, '"useFlow":', ',')
+    userCompany = cutString(dashBoardText, '"userCompany":"', '"')
+    userGender = cutString(dashBoardText, '"userGender":"', '"')
+    userGroup = cutString(dashBoardText, '"userGroupName":"', '"')
+    userIdNumber = cutString(dashBoardText, '"userIdNumber":"', '"')
+    userNum = cutString(dashBoardText, '"userName":"', '"')
+    userPhone = cutString(dashBoardText, '"userPhone":"', '"')
+    userRealName = cutString(dashBoardText, '"userRealName":"', '"')
+    used = float(userFlow)
+    flow = ''
+    if used > 1000:
+        used = used / 1000
+        flow = str(used) + 'G'
+    else:
+        flow = str(used) + 'M'
+    print('姓名：' + userRealName)
+    print('学号：' + userNum)
+    print('已用流量：' + flow)
+    print('套餐：'+ userGroup)
+    print('性别：'+ userGender)
+    print('班级：'+ userCompany)
+    print('身份证号码：'+ userIdNumber)
+    print('手机号码：'+ userPhone)
+
+# 获取分配的 IP 地址
 r = requests.get('http://10.1.1.10/')
 text = r.text
 ip = cutString(text, 'v46ip=\'', '\'')
+
+# 生成提交的表单信息
+username, password = getUserTxt()
 pass_base = base64.b64encode(password.encode()).decode()
 dataToGet = {
     'callback': 'dr1004',
@@ -59,4 +139,22 @@ dataToGet = {
     'v': 1218,
     'lang': 'en',
 }
+
+# 获取登录的 url
 r = requests.get('http://10.1.1.10:801/eportal/portal/custom/auth', params=dataToGet)
+url = cutString(r.text, '"self_auth_url":"', '"')
+url = url.replace('\\', '')
+
+hasCookies = checkCookie()
+if hasCookies == 0:
+    # 没有 cookies 时，保存一个cookies
+    r = requests.get(url)
+    cookies = makeCookies(r.url)    
+else:
+    # 当 cookies 已存在，直接登录
+    cookies = getCookies()
+    r = requests.get(url, cookies=cookies)
+
+# 打印用户信息
+analysis(dashBoardText=r.text)
+exit = input("Press Enter to exit")
