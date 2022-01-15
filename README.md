@@ -14,14 +14,16 @@
   
   - **Linux 或其他支持 Python 的操作系统**
   
-    1. 安装 git Python3
+    1. 安装 git, Python3
   
     2. 安装 Python3 的 requests 包
   
-    3. git clone https://github.com/OnlyCharacters/BJFU-AutoConnect
+    3. ```bash
+       git clone https://github.com/OnlyCharacters/BJFU-AutoConnect
+       ```
   
     4. 打开 xyw.txt，在第一行填上学号，第二行填上登录的密码，保存退出
-  
+    
     5. python3 BJFU-AutoConnect.py 运行
   
 
