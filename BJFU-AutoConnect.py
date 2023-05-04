@@ -86,11 +86,25 @@ def getUserTxt():
     return (username, password)
 
 """
+转换流量格式
+"""
+def flow_convert(flow):
+    ret = ""
+    if flow > 1024:
+        flow = flow / 1024
+        flow = round(flow, 3)
+        ret = str(flow) + 'G'
+    else:
+        ret = str(flow) + 'M'
+    return ret
+
+"""
 打印用户的信息
 """
 def analysis(dashBoardText):
     # dashBoardText     str
-    userFlow = cutString(dashBoardText, '"useFlow":', ',')
+    userUsedFlow = cutString(dashBoardText, '"useFlow":', ',')
+    userLeftFlow = cutString(dashBoardText, '"leftFlow":', ',')
     userCompany = cutString(dashBoardText, '"userCompany":"', '"')
     userGender = cutString(dashBoardText, '"userGender":"', '"')
     userGroup = cutString(dashBoardText, '"userGroupName":"', '"')
@@ -98,16 +112,11 @@ def analysis(dashBoardText):
     userNum = cutString(dashBoardText, '"userName":"', '"')
     userPhone = cutString(dashBoardText, '"userPhone":"', '"')
     userRealName = cutString(dashBoardText, '"userRealName":"', '"')
-    used = float(userFlow)
-    flow = ''
-    if used > 1000:
-        used = used / 1000
-        flow = str(used) + 'G'
-    else:
-        flow = str(used) + 'M'
+
     print('姓名：' + userRealName)
     print('学号：' + userNum)
-    print('已用流量：' + flow)
+    print('已用流量：' + flow_convert(float(userUsedFlow)))
+    print('剩余流量：' + flow_convert(float(userLeftFlow)))
     print('套餐：'+ userGroup)
     print('性别：'+ userGender)
     print('班级：'+ userCompany)
